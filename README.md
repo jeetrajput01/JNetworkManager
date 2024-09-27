@@ -9,6 +9,12 @@ Network manager wrapper for alamofire
 - **Error Handling:** Comprehensive error handling for network-related issues, including timeouts and invalid URLs.
 - **Customizable Timeout:** Set custom timeout intervals for requests.
 
+## Installation
+To integrate **JNetworkManager** into your project, you can use Swift Package Manager. Add the following line to your  `Package.swift` file:
+```swift
+.package(url: "https://github.com/jeetrajput01/JNetworkManager.git", from: "1.0.0")
+```
+
 ## Usage
 **Making an Asynchronous Request**
 ```swift
