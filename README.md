@@ -18,7 +18,7 @@ To integrate **JNetworkManager** into your project, you can use Swift Package Ma
 ## Usage
 **Making an Asynchronous Request**
 ```swift
-let result = await NetworkManager.makeAsyncRequest(url: "https://api.example.com/data", method: .get)
+let result = await JNetworkManager.makeAsyncRequest(url: "https://api.example.com/data", method: .get)
 switch result {
 case .success(let data):
     print("Data received: \(data)")
@@ -29,7 +29,7 @@ case .failure(let error):
 **Uploading Files**
 ```swift
 let mediaObject = mediaObject(type: .other, data: fileData, filename: "file.txt", mimeType: "text/plain")
-let result = await NetworkManager.makeAsyncUploadRequest(url: "https://api.example.com/upload", method: .post, parameter: ["key": "value"], mediaObj: ["file": mediaObject])
+let result = await JNetworkManager.makeAsyncUploadRequest(url: "https://api.example.com/upload", method: .post, parameter: ["key": "value"], mediaObj: ["file": mediaObject])
 
 switch result {
 case .success(let response):
