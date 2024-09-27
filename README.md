@@ -40,6 +40,9 @@ The package provides a comprehensive error handling mechanism. It differentiates
 - Timeout Errors
 - Invalid URLs
 
+## Alamofire
+**Link:** [Alamofire](https://github.com/Alamofire/Alamofire)
+
 ## Contributing
 Contributions are welcome! Please feel free to submit issues and pull requests.
 
