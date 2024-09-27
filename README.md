@@ -10,9 +10,15 @@ Network manager wrapper for alamofire
 - **Customizable Timeout:** Set custom timeout intervals for requests.
 
 ## Installation
-To integrate **JNetworkManager** into your project, you can use Swift Package Manager. Add the following line to your  `Package.swift` file:
+## Swift Package Manager
+To integrate **JNetworkManager** into your project, you can use **Swift Package Manager**. Add the following line to your  `Package.swift` file:
 ```swift
 .package(url: "https://github.com/jeetrajput01/JNetworkManager.git", from: "1.0.0")
+```
+## cocoapods
+To integrate **JNetworkManager** into your project, you can use **cocoapods**. Add the following line to your  `Podfile` file:
+```ruby
+pod 'JNetworkManager', '~> 1.0.0'
 ```
 
 ## Usage
