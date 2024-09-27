@@ -1,0 +1,24 @@
+{
+  "originHash" : "10aca33adb1d01b6d532fc7eafebd9c191ed2765f08da1952781de4fc0c55357",
+  "pins" : [
+    {
+      "identity" : "alamofire",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Alamofire/Alamofire.git",
+      "state" : {
+        "revision" : "f455c2975872ccd2d9c81594c658af65716e9b9a",
+        "version" : "5.9.1"
+      }
+    },
+    {
+      "identity" : "jnetworkmanager",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jeetrajput01/JNetworkManager.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "6473642861650bc1d02e40e9023b0247a7f1fedc"
+      }
+    }
+  ],
+  "version" : 3
+}
