@@ -7,7 +7,7 @@ let package = Package(
     name: "JNetworkManager",
     platforms: [.iOS(.v13)],
     products: [
-        // Products define the executables and libraries a package produces, making them visible to other packages.
+        // Products define the executables and libraries a package produces, making them visible to other packages. 
         .library(
             name: "JNetworkManager",
             targets: ["JNetworkManager"]),
