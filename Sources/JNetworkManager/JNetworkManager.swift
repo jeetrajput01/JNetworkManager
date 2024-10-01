@@ -184,7 +184,7 @@ public class JNetworkManager {
                          // Append parameters
                          if let params = parameter {
                              for (key, value) in params {
-                                 if let val = value as? String, let data = val.data(using: .utf8) {
+                                 if let data = "\(value)".data(using: .utf8) {
                                      multipartFormData.append(data, withName: key)
                                  }
                              }
@@ -273,7 +273,7 @@ public class JNetworkManager {
                         // Append parameters
                         if let params = parameter {
                             for (key, value) in params {
-                                if let val = value as? String, let data = val.data(using: .utf8) {
+                                if let data = "\(value)".data(using: .utf8) {
                                     multipartFormData.append(data, withName: key)
                                 }
                             }
@@ -455,7 +455,7 @@ extension JNetworkManager {
                         // Append parameters
                         if let params = parameter {
                             for (key, value) in params {
-                                if let val = value as? String, let data = val.data(using: .utf8) {
+                                if let data = "\(value)".data(using: .utf8) {
                                     multipartFormData.append(data, withName: key)
                                 }
                             }
@@ -467,7 +467,7 @@ extension JNetworkManager {
                                 multipartFormData.append(media.data, withName: key, fileName: media.filename, mimeType: media.mimeType)
                             }
                         }
-                        
+                   
                     }, with: urlRequest)
                     .uploadProgress { progress in
                         progressHandler?(progress.fractionCompleted)
@@ -542,7 +542,7 @@ extension JNetworkManager {
                         // Append parameters
                         if let params = parameter {
                             for (key, value) in params {
-                                if let val = value as? String, let data = val.data(using: .utf8) {
+                                if let data = "\(value)".data(using: .utf8) {
                                     multipartFormData.append(data, withName: key)
                                 }
                             }

@@ -90,7 +90,7 @@ extension ContentViewViewModel {
                 self.handle(error: failure)
             }
         }
-        
+          
     }
     
 }
