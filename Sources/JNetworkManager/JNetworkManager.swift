@@ -76,49 +76,67 @@ public class JNetworkManager {
     ///   - timeoutInterval: The timeout interval for the request in seconds. The default value is 30 seconds.
     ///   - type: The type conforming to `Codable` that the response should be decoded into.
     /// - Returns: An asynchronous result of type `Result<T, Error>`, where `T` is the specified `Codable` type. The result will either contain the decoded data on success, or an error on failure.
-    public class func makeAsyncRequest<T:Codable>(url: String, method: HTTPMethod, parameter: [String:Any]?, headers: [String: String] = [:], timeoutInterval: TimeInterval = 30, type: T.Type) async -> Result<T,Error> {
-        
-        guard NetworkReachability.shared.isInternetAvailable() else {
-            return .failure(NetworkError.noInternet)
+    ///
+    #warning("Need to update function description.")
+    public class func makeAsyncRequest<T: Codable>(url: String,method: HTTPMethod,parameter: [String: Any]?,headers: [String: String] = [:],timeoutInterval: TimeInterval = 30,type: T.Type,allowCaching: Bool = false,cacheExpiry: TimeInterval = 300) async -> Result<T, Error> {
+
+        let cacheKey = "\(method.rawValue)_\(url)_\(parameter?.description ?? "")"
+
+        // Check if there's no internet and caching is enabled
+        if !NetworkReachability.shared.isInternetAvailable() {
+            if allowCaching, let cachedData = CacheManager.shared.getCachedResponse(for: cacheKey),
+               CacheManager.shared.isCacheValid(for: cacheKey, expiryTime: cacheExpiry) {
+                do {
+                    let cachedResponse = try JSONDecoder().decode(T.self, from: cachedData)
+                    return .success(cachedResponse)
+                } catch {
+                    return .failure(NetworkError.noInternet)
+                }
+            } else {
+                return .failure(NetworkError.noInternet)
+            }
         }
-        
+
+        // Proceed with the network request if internet is available
         switch createURLRequest(url: url, method: method, headers: headers, timeoutInterval: timeoutInterval) {
         case .success(let urlRequest):
             do {
                 return try await withCheckedThrowingContinuation { continuation in
-                    
                     AF.request(urlRequest)
                         .responseData(queue: .global(qos: .background)) { response in
-                            
                             switch response.result {
-                                
                             case .success(let responseData):
                                 do {
-                                    
                                     print(responseData.prettyPrintedJSONString ?? "")
                                     guard let httpResponse = response.response else {
                                         continuation.resume(returning: .failure(NetworkError.unknown))
                                         return
                                     }
+
                                     if httpResponse.statusCode == 200 {
                                         let data = try JSONDecoder().decode(T.self, from: responseData)
+
+                                        // Cache the response if caching is enabled and no sensitive data
+                                        if allowCaching {
+                                            CacheManager.shared.clearOldestCacheEntries()
+                                            CacheManager.shared.cacheResponse(data: responseData, for: cacheKey)
+                                        }
+
                                         continuation.resume(returning: .success(data))
                                     } else if httpResponse.statusCode == 401 {
                                         continuation.resume(returning: .failure(NetworkError.authentication))
                                     } else {
                                         continuation.resume(returning: .failure(NetworkError.responseError))
                                     }
-                                    
                                 } catch {
-                                    print(error.localizedDescription)
                                     continuation.resume(returning: .failure(NetworkError.unknown))
                                 }
-                                
+
                             case .failure(let error):
                                 print(error.localizedDescription)
                                 if let afError = error.asAFError {
                                     if afError.isSessionTaskError || afError.isExplicitlyCancelledError {
-                                        
+                                       
                                         print("Request timed out.")
                                         continuation.resume(returning: .failure(NetworkError.timeout))
                                     } else {
@@ -136,20 +154,16 @@ public class JNetworkManager {
                                     continuation.resume(returning: .failure(error))
                                 }
                             }
-                            
                         }
                 }
-                
             } catch {
-                print(error.localizedDescription)
                 return .failure(NetworkError.unknown)
-                
             }
         case .failure(let error):
             return .failure(error)
         }
-        
     }
+
     
     /// Asynchronously uploads a multipart form request with media and parameters, and decodes the response into a specified `Codable` type.
     ///
@@ -347,22 +361,34 @@ extension JNetworkManager {
     ///   - headers: The HTTP headers to include in the request, provided as a dictionary of `[String: String]`. The default is an empty dictionary.
     ///   - timeoutInterval: The timeout interval for the request in seconds. The default value is 30 seconds.
     /// - Returns: An asynchronous result of type `Result<Any, Error>`. The result will either contain the parsed response on success, or an error on failure.
-    public class func makeAsyncRequest(url: String, method: HTTPMethod, parameter: [String:Any]?,headers: [String: String] = [:],timeoutInterval: TimeInterval = 30) async -> Result<Any,Error> {
-        
-        guard NetworkReachability.shared.isInternetAvailable() else {
-            return .failure(NetworkError.noInternet)
+    #warning("Need to update function description.")
+    public class func makeAsyncRequest(url: String,method: HTTPMethod,parameter: [String: Any]?,headers: [String: String] = [:],timeoutInterval: TimeInterval = 30,allowCaching: Bool = false,cacheExpiry: TimeInterval = 300) async -> Result<Any, Error> {
+
+        let cacheKey = "\(method.rawValue)_\(url)_\(parameter?.description ?? "")"
+
+        // If no internet and caching is allowed, try returning cached data
+        if !NetworkReachability.shared.isInternetAvailable() {
+            if allowCaching, let cachedData = CacheManager.shared.getCachedResponse(for: cacheKey),
+               CacheManager.shared.isCacheValid(for: cacheKey, expiryTime: cacheExpiry) {
+                do {
+                    let cachedResponse = try JSONSerialization.jsonObject(with: cachedData, options: [])
+                    return .success(cachedResponse)
+                } catch {
+                    return .failure(NetworkError.noInternet)
+                }
+            } else {
+                return .failure(NetworkError.noInternet)
+            }
         }
-        
+
+        // Proceed with network request if internet is available
         switch createURLRequest(url: url, method: method, headers: headers, timeoutInterval: timeoutInterval) {
         case .success(let urlRequest):
             do {
                 return try await withCheckedThrowingContinuation { continuation in
-                  
                     AF.request(urlRequest)
                         .responseData(queue: .global(qos: .background)) { response in
-                            
                             switch response.result {
-                                
                             case .success(let responseData):
                                 do {
                                     print(responseData.prettyPrintedJSONString ?? "")
@@ -370,21 +396,26 @@ extension JNetworkManager {
                                         continuation.resume(returning: .failure(NetworkError.unknown))
                                         return
                                     }
+
                                     if httpResponse.statusCode == 200 {
-                                        let response = try JSONSerialization.jsonObject(with: responseData)
+                                        let response = try JSONSerialization.jsonObject(with: responseData, options: [])
+
+                                        // Cache the response if caching is allowed and data is not sensitive
+                                        if allowCaching {
+                                            CacheManager.shared.clearOldestCacheEntries()
+                                            CacheManager.shared.cacheResponse(data: responseData, for: cacheKey)
+                                        }
+
                                         continuation.resume(returning: .success(response))
-                                        
                                     } else if httpResponse.statusCode == 401 {
                                         continuation.resume(returning: .failure(NetworkError.authentication))
                                     } else {
                                         continuation.resume(returning: .failure(NetworkError.responseError))
                                     }
-                                    
                                 } catch {
-                                    print("Parsing error: \(error.localizedDescription)")
                                     continuation.resume(returning: .failure(NetworkError.unknown))
                                 }
-                                
+
                             case .failure(let error):
                                 print(error.localizedDescription)
                                 if let afError = error.asAFError {
@@ -407,21 +438,16 @@ extension JNetworkManager {
                                     continuation.resume(returning: .failure(error))
                                 }
                             }
-                            
                         }
                 }
-                
             } catch {
-                print(error.localizedDescription)
                 return .failure(NetworkError.unknown)
-                
             }
         case .failure(let error):
             return .failure(error)
         }
-        
-        
     }
+
     
     /// Asynchronously uploads a multipart form request with parameters and a single media object, returning the response as a result.
     ///
