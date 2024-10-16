@@ -13,7 +13,7 @@ import Alamofire
 
 public enum NetworkError: Error {
     case invalidURL
-    case responseError
+    case responseError(_ statusCode:Int)
     case unknown
     case authentication
     case timeout
@@ -26,8 +26,8 @@ extension NetworkError: LocalizedError {
         switch self {
         case .invalidURL:
             return NSLocalizedString("Invalid URL", comment: "Invalid URL")
-        case .responseError:
-            return NSLocalizedString("Unexpected status code", comment: "Invalid response")
+        case .responseError(let statusCode):
+            return NSLocalizedString("Unexpected status code = \(statusCode)", comment: "Invalid response")
         case .unknown:
             return NSLocalizedString("Unknown error", comment: "Unknown error")
         case .authentication:
@@ -106,7 +106,7 @@ public class JNetworkManager {
                                     } else if httpResponse.statusCode == 401 {
                                         continuation.resume(returning: .failure(NetworkError.authentication))
                                     } else {
-                                        continuation.resume(returning: .failure(NetworkError.responseError))
+                                        continuation.resume(returning: .failure(NetworkError.responseError(httpResponse.statusCode)))
                                     }
                                     
                                 } catch {
@@ -218,7 +218,7 @@ public class JNetworkManager {
                                  } else if httpResponse.statusCode == 401 {
                                      continuation.resume(returning: .failure(NetworkError.authentication))
                                  } else {
-                                     continuation.resume(returning: .failure(NetworkError.responseError))
+                                     continuation.resume(returning: .failure(NetworkError.responseError(httpResponse.statusCode)))
                                  }
                              } catch {
                                  continuation.resume(returning: .failure(NetworkError.unknown))
@@ -309,7 +309,7 @@ public class JNetworkManager {
                                 } else if httpResponse.statusCode == 401 {
                                     continuation.resume(returning: .failure(NetworkError.authentication))
                                 } else {
-                                    continuation.resume(returning: .failure(NetworkError.responseError))
+                                    continuation.resume(returning: .failure(NetworkError.responseError(httpResponse.statusCode)))
                                 }
                             } catch {
                                 continuation.resume(returning: .failure(NetworkError.unknown))
@@ -377,7 +377,7 @@ extension JNetworkManager {
                                     } else if httpResponse.statusCode == 401 {
                                         continuation.resume(returning: .failure(NetworkError.authentication))
                                     } else {
-                                        continuation.resume(returning: .failure(NetworkError.responseError))
+                                        continuation.resume(returning: .failure(NetworkError.responseError(httpResponse.statusCode)))
                                     }
                                     
                                 } catch {
@@ -489,7 +489,7 @@ extension JNetworkManager {
                                 } else if httpResponse.statusCode == 401 {
                                     continuation.resume(returning: .failure(NetworkError.authentication))
                                 } else {
-                                    continuation.resume(returning: .failure(NetworkError.responseError))
+                                    continuation.resume(returning: .failure(NetworkError.responseError(httpResponse.statusCode)))
                                 }
                             } catch {
                                 continuation.resume(returning: .failure(NetworkError.unknown))
@@ -578,7 +578,7 @@ extension JNetworkManager {
                                 } else if httpResponse.statusCode == 401 {
                                     continuation.resume(returning: .failure(NetworkError.authentication))
                                 } else {
-                                    continuation.resume(returning: .failure(NetworkError.responseError))
+                                    continuation.resume(returning: .failure(NetworkError.responseError(httpResponse.statusCode)))
                                 }
                             } catch {
                                 continuation.resume(returning: .failure(NetworkError.unknown))
