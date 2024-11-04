@@ -666,21 +666,28 @@ extension JNetworkManager {
     ///   - method: The HTTP method to be used for the request (e.g., GET, POST).
     ///   - headers: A dictionary of HTTP headers to include in the request, represented as `[String: String]`.
     ///   - timeoutInterval: The timeout interval for the request in seconds.
+    ///   - Parameters: The request parameters, provided as a dictionary of `[String: Any]`, optional.
     /// - Returns: A `Result` containing either the created `URLRequest` on success or an `Error` on failure.
-    private class func createURLRequest(url: String, method: HTTPMethod, headers: [String: String], timeoutInterval: TimeInterval) -> Result<URLRequest, Error> {
-        guard let validURL = URL(string: url) else {
+    private class func createURLRequest(url: String, method: HTTPMethod, headers: [String: String],parameters: [String: Any]? = nil, timeoutInterval: TimeInterval) -> Result<URLRequest, Error> {
+        guard let url = URL(string: url) else {
             return .failure(NetworkError.invalidURL)
         }
         
-        var urlRequest: URLRequest
-        do {
-            let httpHeader = HTTPHeaders(headers)
-            urlRequest = try URLRequest(url: validURL, method: method, headers: httpHeader)
-            urlRequest.timeoutInterval = timeoutInterval
-            return .success(urlRequest)
-        } catch {
-            return .failure(NetworkError.unknown)
+        var urlRequest = URLRequest(url: url)
+        urlRequest.httpMethod = method.rawValue
+        urlRequest.timeoutInterval = timeoutInterval
+        urlRequest.allHTTPHeaderFields = headers
+
+        if let parameters = parameters {
+            do {
+                let jsonData = try JSONSerialization.data(withJSONObject: parameters, options: [])
+                urlRequest.httpBody = jsonData
+            } catch {
+                return .failure(NetworkError.unknown)
+            }
         }
+        
+        return .success(urlRequest)
     }
     
 }
