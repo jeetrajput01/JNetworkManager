@@ -82,7 +82,7 @@ public class JNetworkManager {
             return .failure(NetworkError.noInternet)
         }
         
-        switch createURLRequest(url: url, method: method, headers: headers, timeoutInterval: timeoutInterval) {
+        switch createURLRequest(url: url, method: method, headers: headers,parameters: parameter, timeoutInterval: timeoutInterval) {
         case .success(let urlRequest):
             do {
                 return try await withCheckedThrowingContinuation { continuation in
@@ -353,7 +353,7 @@ extension JNetworkManager {
             return .failure(NetworkError.noInternet)
         }
         
-        switch createURLRequest(url: url, method: method, headers: headers, timeoutInterval: timeoutInterval) {
+        switch createURLRequest(url: url, method: method, headers: headers,parameters: parameter, timeoutInterval: timeoutInterval) {
         case .success(let urlRequest):
             do {
                 return try await withCheckedThrowingContinuation { continuation in
@@ -381,8 +381,14 @@ extension JNetworkManager {
                                     }
                                     
                                 } catch {
-                                    print("Parsing error: \(error.localizedDescription)")
-                                    continuation.resume(returning: .failure(NetworkError.unknown))
+                                    
+                                    if let responseString = String(data: responseData, encoding: .utf8) {
+                                        continuation.resume(returning: .success(responseString))
+                                    } else {
+                                        print("Parsing error: \(error.localizedDescription)")
+                                        continuation.resume(returning: .failure(NetworkError.unknown))
+                                    }
+                                   
                                 }
                                 
                             case .failure(let error):
