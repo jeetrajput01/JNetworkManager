@@ -26,10 +26,10 @@ class ContentViewViewModel {
 //MARK: -  new async/await
 extension ContentViewViewModel {
     
-    @MainActor
+    
     func getAllData() {
         
-        Task {
+        Task { @MainActor in
             
             self.isShowLoader = true
             
@@ -106,8 +106,8 @@ extension ContentViewViewModel {
             switch networkError {
             case .invalidURL:
                 print(networkError.localizedDescription)
-            case .responseError:
-                print(networkError.localizedDescription)
+            case .responseError(let statusCode):
+                print("\(networkError.localizedDescription), \(statusCode)")
             case .unknown:
                 print(networkError.localizedDescription)
             case .authentication:

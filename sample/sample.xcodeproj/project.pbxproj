@@ -16,7 +16,7 @@
 		B175D14B2CA438FD004D968D /* TodoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B175D1472CA438FD004D968D /* TodoModel.swift */; };
 		B175D14C2CA438FD004D968D /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B175D1482CA438FD004D968D /* UserModel.swift */; };
 		B175D14F2CA43903004D968D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B175D14D2CA43903004D968D /* ContentView.swift */; };
-		B1F549C22CA6ABEC0067FDE7 /* JNetworkManager in Frameworks */ = {isa = PBXBuildFile; productRef = B1F549C12CA6ABEC0067FDE7 /* JNetworkManager */; };
+		B1AEAF002CD8FE7A00300EAC /* JNetworkManager in Frameworks */ = {isa = PBXBuildFile; productRef = B1AEAEFF2CD8FE7A00300EAC /* JNetworkManager */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,7 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B1F549C22CA6ABEC0067FDE7 /* JNetworkManager in Frameworks */,
+				B1AEAF002CD8FE7A00300EAC /* JNetworkManager in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,7 +126,7 @@
 			);
 			name = sample;
 			packageProductDependencies = (
-				B1F549C12CA6ABEC0067FDE7 /* JNetworkManager */,
+				B1AEAEFF2CD8FE7A00300EAC /* JNetworkManager */,
 			);
 			productName = sample;
 			productReference = B175D1302CA438C8004D968D /* sample.app */;
@@ -157,7 +157,7 @@
 			);
 			mainGroup = B175D1272CA438C8004D968D;
 			packageReferences = (
-				B1F549C02CA6ABEC0067FDE7 /* XCRemoteSwiftPackageReference "JNetworkManager" */,
+				B1AEAEFE2CD8FE7A00300EAC /* XCRemoteSwiftPackageReference "JNetworkManager" */,
 			);
 			productRefGroup = B175D1312CA438C8004D968D /* Products */;
 			projectDirPath = "";
@@ -422,20 +422,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		B1F549C02CA6ABEC0067FDE7 /* XCRemoteSwiftPackageReference "JNetworkManager" */ = {
+		B1AEAEFE2CD8FE7A00300EAC /* XCRemoteSwiftPackageReference "JNetworkManager" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/jeetrajput01/JNetworkManager.git";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		B1F549C12CA6ABEC0067FDE7 /* JNetworkManager */ = {
+		B1AEAEFF2CD8FE7A00300EAC /* JNetworkManager */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = B1F549C02CA6ABEC0067FDE7 /* XCRemoteSwiftPackageReference "JNetworkManager" */;
+			package = B1AEAEFE2CD8FE7A00300EAC /* XCRemoteSwiftPackageReference "JNetworkManager" */;
 			productName = JNetworkManager;
 		};
 /* End XCSwiftPackageProductDependency section */
