@@ -13,12 +13,12 @@ Network manager wrapper for alamofire
 ## Swift Package Manager
 To integrate **JNetworkManager** into your project, you can use **Swift Package Manager**. Add the following line to your  `Package.swift` file:
 ```swift
-.package(url: "https://github.com/jeetrajput01/JNetworkManager.git", from: "1.1")
+.package(url: "https://github.com/jeetrajput01/JNetworkManager.git", from: "1.2")
 ```
 ## cocoapods
 To integrate **JNetworkManager** into your project, you can use **cocoapods**. Add the following line to your  `Podfile` file:
 ```ruby
-pod 'JNetworkManager', '1.1'
+pod 'JNetworkManager', '1.2'
 ```
 
 ## Usage
