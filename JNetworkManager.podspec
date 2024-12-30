@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "JNetworkManager"
-  spec.version      = "1.2"
+  spec.version      = "1.3"
   spec.summary      = "A lightweight network manager for handling network requests efficiently."
 
   # This description is used to generate tags and improve search results.
@@ -82,8 +82,8 @@ Pod::Spec.new do |spec|
   #
 
   spec.source       = { :git => "https://github.com/jeetrajput01/JNetworkManager.git", :tag => "#{spec.version}" }
-  spec.ios.deployment_target = '13.0'
-  spec.swift_version = '5.0'
+  spec.ios.deployment_target = '15.0'
+  spec.swift_version = '6.0'
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
