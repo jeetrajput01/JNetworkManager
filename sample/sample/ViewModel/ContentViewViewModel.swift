@@ -12,7 +12,6 @@ import JNetworkManager
 @Observable
 class ContentViewViewModel {
 
-    @MainActor
     var isShowLoader:Bool = false
     
     var errorMessage:String = ""
@@ -26,10 +25,10 @@ class ContentViewViewModel {
 //MARK: -  new async/await
 extension ContentViewViewModel {
     
-    
+    @MainActor
     func getAllData() {
         
-        Task { @MainActor in
+        Task {
             
             self.isShowLoader = true
             

