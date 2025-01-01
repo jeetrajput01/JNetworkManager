@@ -12,6 +12,7 @@ enum apiUrl: String {
     case brand
     case user
     case todos
+    case posts
     
     var route: String {
         get {
@@ -23,6 +24,8 @@ enum apiUrl: String {
                 "https://jsonplaceholder.typicode.com/users"
             case .todos:
                 "https://jsonplaceholder.typicode.com/todos"
+            case .posts:
+                "https://jsonplaceholder.typicode.com/posts"
             }
         }
     }

@@ -13,18 +13,23 @@ Network manager wrapper for alamofire
 ## Swift Package Manager
 To integrate **JNetworkManager** into your project, you can use **Swift Package Manager**. Add the following line to your  `Package.swift` file:
 ```swift
-.package(url: "https://github.com/jeetrajput01/JNetworkManager.git", from: "1.3")
+.package(url: "https://github.com/jeetrajput01/JNetworkManager.git", from: "1.3.2")
 ```
 ## cocoapods
 To integrate **JNetworkManager** into your project, you can use **cocoapods**. Add the following line to your  `Podfile` file:
 ```ruby
-pod 'JNetworkManager', '1.3'
+pod 'JNetworkManager', '1.3.2'
 ```
 
 ## Usage
 **Making an Asynchronous Request**
 ```swift
-let result = await JNetworkManager.makeAsyncRequest(url: "https://api.example.com/data", method: .get)
+let result = await JNetworkManager.makeAsyncRequest(
+url: "https://jsonplaceholder.typicode.com/posts",
+method: .get,
+parameter: nil,
+type: [Post].self
+)
 switch result {
 case .success(let data):
     print("Data received: \(data)")
@@ -34,7 +39,7 @@ case .failure(let error):
 ```
 **Uploading Files**
 ```swift
-let mediaObject = mediaObject(type: .other, data: fileData, filename: "file.txt", mimeType: "text/plain")
+let mediaObject = mediaObject(data: fileData, filename: "file.txt", mimeType: "text/plain")
 let result = await JNetworkManager.makeAsyncUploadRequest(url: "https://api.example.com/upload", method: .post, parameter: ["key": "value"], mediaObj: ["file": mediaObject])
 
 switch result {
@@ -54,6 +59,9 @@ The package provides a comprehensive error handling mechanism. It differentiates
 
 ## Alamofire
 **Link:** [Alamofire](https://github.com/Alamofire/Alamofire)
+
+## AnyCodable
+**Link:** [AnyCodable](https://github.com/Flight-School/AnyCodable)
 
 ## Contributing
 Contributions are welcome! Please feel free to submit issues and pull requests.
