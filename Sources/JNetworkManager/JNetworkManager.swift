@@ -158,6 +158,7 @@ public class JNetworkManager {
     ///   - type: The type conforming to `Codable` that the response should be decoded into.
     ///   - progressHandler: A closure to handle progress updates, with the progress fraction passed as a `Double` (0.0 to 1.0). Optional.
     /// - Returns: An asynchronous result of type `Result<T, Error>`, where `T` is the specified `Codable` type. The result will either contain the decoded data on success, or an error on failure.
+    @Sendable
     public class func makeAsyncUploadRequest<T: Codable>(url: String, method: HTTPMethod, parameter: [String: Any]?, mediaObjects: [String: [mediaObject]]? = nil, headers: [String: String] = [:], timeoutInterval: TimeInterval = 30, type: T.Type, progressHandler: ((Double) -> Void)? = nil) async -> Result<T, Error> {
         
         guard self.isInternetAvailable() else {
@@ -232,6 +233,285 @@ public class JNetworkManager {
     }
 
 }
+
+//MARK: - Without generic
+extension JNetworkManager {
+    
+    /// Asynchronously performs an API request and returns the response as a generic result.
+    ///
+    /// This function sends an HTTP request to the specified URL using the provided HTTP method and parameters.
+    /// It returns a `Result` type containing either the JSON response on success or an error on failure.
+    /// The response is parsed into a generic `Any` type, which can be further cast to the desired type.
+    ///
+    /// - Parameters:
+    ///   - url: The URL string for the API request.
+    ///   - method: The HTTP method to use for the request (e.g., GET, POST).
+    ///   - parameter: The request parameters, provided as a dictionary of `[String: Any]`, optional.
+    ///   - headers: The HTTP headers to include in the request, provided as a dictionary of `[String: String]`. The default is an empty dictionary.
+    ///   - timeoutInterval: The timeout interval for the request in seconds. The default value is 30 seconds.
+    /// - Returns: An asynchronous result of type `Result<Any, Error>`. The result will either contain the parsed response on success, or an error on failure.
+    public class func makeAsyncRequest(url: String, method: HTTPMethod, parameter: [String:Any]?,headers: [String: String] = [:],timeoutInterval: TimeInterval = 30) async -> Result<Any,Error> {
+        
+        guard self.isInternetAvailable() else {
+            return .failure(NetworkError.noInternet)
+        }
+        
+        switch createURLRequest(url: url, method: method, headers: headers,parameters: parameter, timeoutInterval: timeoutInterval) {
+        case .success(let urlRequest):
+            do {
+                return try await withCheckedThrowingContinuation { continuation in
+                  
+                    AF.request(urlRequest)
+                        .responseData(queue: .global(qos: .background)) { response in
+                            
+                            switch response.result {
+                                
+                            case .success(let responseData):
+                                do {
+                                    print(responseData.prettyPrintedJSONString ?? "")
+                                    guard let httpResponse = response.response else {
+                                        continuation.resume(returning: .failure(NetworkError.unknown))
+                                        return
+                                    }
+                                    if httpResponse.statusCode == 200 {
+                                        let response = try JSONSerialization.jsonObject(with: responseData)
+                                        continuation.resume(returning: .success(response))
+                                        
+                                    } else if httpResponse.statusCode == 401 {
+                                        continuation.resume(returning: .failure(NetworkError.authentication))
+                                    } else {
+                                        continuation.resume(returning: .failure(NetworkError.responseError(httpResponse.statusCode)))
+                                    }
+                                    
+                                } catch {
+                                    
+                                    if let responseString = String(data: responseData, encoding: .utf8) {
+                                        continuation.resume(returning: .success(responseString))
+                                    } else {
+                                        print("Parsing error: \(error.localizedDescription)")
+                                        continuation.resume(returning: .failure(NetworkError.unknown))
+                                    }
+                                   
+                                }
+                                
+                            case .failure(let error):
+                                print(error.localizedDescription)
+                                if let afError = error.asAFError {
+                                    if afError.isSessionTaskError || afError.isExplicitlyCancelledError {
+                                       
+                                        print("Request timed out.")
+                                        continuation.resume(returning: .failure(NetworkError.timeout))
+                                    } else {
+                                        // Handle other AFErrors
+                                        if let responseData = response.data {
+                                            print("Failure response: \(responseData.prettyPrintedJSONString ?? String(decoding: responseData, as: UTF8.self))")
+                                        }
+                                        continuation.resume(returning: .failure(NetworkError.invalidURL))
+                                    }
+                                } else {
+                                    // Handle non-AFError cases
+                                    if let responseData = response.data {
+                                        print("Failure response: \(responseData.prettyPrintedJSONString ?? String(decoding: responseData, as: UTF8.self))")
+                                    }
+                                    continuation.resume(returning: .failure(error))
+                                }
+                            }
+                            
+                        }
+                }
+                
+            } catch {
+                print(error.localizedDescription)
+                return .failure(NetworkError.unknown)
+                
+            }
+        case .failure(let error):
+            return .failure(error)
+        }
+        
+        
+    }
+    
+    /// Asynchronously uploads a multipart form request with parameters and a single media object, returning the response as a result.
+    ///
+    /// This function allows for the upload of a file (media object) alongside additional parameters using a multipart form data request.
+    /// It provides a progress handler to monitor the upload progress and returns the server response in a `Result` type, which can be either success or failure.
+    ///
+    /// - Parameters:
+    ///   - url: The URL string for the API request.
+    ///   - method: The HTTP method to use for the request (e.g., POST, PUT).
+    ///   - parameter: The request parameters, provided as a dictionary of `[String: Any]`, optional.
+    ///   - mediaObj: A dictionary where the key is a string and the value is a `mediaObject` instance to upload.
+    ///   - headers: The HTTP headers to include in the request, provided as a dictionary of `[String: String]`. The default is an empty dictionary.
+    ///   - timeoutInterval: The timeout interval for the request in seconds. The default value is 30 seconds.
+    ///   - progressHandler: A closure to handle progress updates, with the progress fraction passed as a `Double` (0.0 to 1.0). Optional.
+    /// - Returns: An asynchronous result of type `Result<Any, Error>`. The result will either contain the parsed response on success, or an error on failure.
+    @Sendable
+    public class func makeAsyncUploadRequest(url: String, method: HTTPMethod, parameter: [String: Any]?, mediaObj: [String: mediaObject]?, headers: [String: String] = [:], timeoutInterval: TimeInterval = 30, progressHandler: ((Double) -> Void)? = nil) async -> Result<Any, Error> {
+        
+        guard self.isInternetAvailable() else {
+            return .failure(NetworkError.noInternet)
+        }
+        
+        switch createURLRequest(url: url, method: method, headers: headers, timeoutInterval: timeoutInterval) {
+            
+        case .success(let urlRequest):
+            do {
+                return try await withCheckedThrowingContinuation { continuation in
+                    
+                    // Perform the upload
+                    AF.upload(multipartFormData: { multipartFormData in
+                        
+                        // Append parameters
+                        if let params = parameter {
+                            for (key, value) in params {
+                                if let data = "\(value)".data(using: .utf8) {
+                                    multipartFormData.append(data, withName: key)
+                                }
+                            }
+                        }
+                        
+                        // Append media objects
+                        if let mediaObjects = mediaObj {
+                            for (key, media) in mediaObjects {
+                                multipartFormData.append(media.data, withName: key, fileName: media.filename, mimeType: media.mimeType)
+                            }
+                        }
+                   
+                    }, with: urlRequest)
+                    .uploadProgress { progress in
+                        progressHandler?(progress.fractionCompleted)
+                    }
+                    .responseData(queue: .global(qos: .background)) { response in
+                        
+                        switch response.result {
+                            
+                        case .success(let responseData):
+                            do {
+                                print(responseData.prettyPrintedJSONString ?? "")
+                                guard let httpResponse = response.response else {
+                                    continuation.resume(returning: .failure(NetworkError.unknown))
+                                    return
+                                }
+                                if httpResponse.statusCode == 200 {
+                                    let response = try JSONSerialization.jsonObject(with: responseData)
+                                    continuation.resume(returning: .success(response))
+                                } else if httpResponse.statusCode == 401 {
+                                    continuation.resume(returning: .failure(NetworkError.authentication))
+                                } else {
+                                    continuation.resume(returning: .failure(NetworkError.responseError(httpResponse.statusCode)))
+                                }
+                            } catch {
+                                continuation.resume(returning: .failure(NetworkError.unknown))
+                            }
+                            
+                        case .failure(let error):
+                            handleAFError(error, response: response, continuation: continuation)
+                        }
+                    }
+                }
+            } catch {
+                return .failure(NetworkError.unknown)
+            }
+        case .failure(let error):
+            return .failure(error)
+            
+        }
+        
+        
+    }
+
+    /// Asynchronously uploads a multipart form request with parameters and multiple media objects, returning the response as a result.
+    ///
+    /// This function allows for the upload of files (media objects) alongside additional parameters using a multipart form data request.
+    /// It tracks the upload progress via a closure and returns the response in a `Result` type, which can be either success or failure.
+    ///
+    /// - Parameters:
+    ///   - url: The URL string for the API request.
+    ///   - method: The HTTP method to use for the request (e.g., POST, PUT).
+    ///   - parameter: The request parameters, provided as a dictionary of `[String: Any]`, optional.
+    ///   - mediaObjects: A dictionary where the key is a string and the value is an array of `mediaObject` instances to upload, optional.
+    ///   - headers: The HTTP headers to include in the request, provided as a dictionary of `[String: String]`. The default is an empty dictionary.
+    ///   - timeoutInterval: The timeout interval for the request in seconds. The default value is 30 seconds.
+    ///   - progressHandler: A closure to handle progress updates, with the progress fraction passed as a `Double` (0.0 to 1.0). Optional.
+    /// - Returns: An asynchronous result of type `Result<Any, Error>`. The result will either contain the parsed response on success, or an error on failure.
+    @Sendable
+    public class func makeAsyncUploadRequest(url: String, method: HTTPMethod, parameter: [String: Any]?, mediaObjects: [String: [mediaObject]]? = nil, headers: [String: String] = [:], timeoutInterval: TimeInterval = 30, progressHandler: ((Double) -> Void)? = nil) async -> Result<Any, Error> {
+        
+        guard self.isInternetAvailable() else {
+            return .failure(NetworkError.noInternet)
+        }
+        
+        switch createURLRequest(url: url, method: method, headers: headers, timeoutInterval: timeoutInterval) {
+            
+        case .success(let urlRequest):
+            do {
+                return try await withCheckedThrowingContinuation { continuation in
+                    
+                    AF.upload(multipartFormData: { multipartFormData in
+                        
+                        // Append parameters
+                        if let params = parameter {
+                            for (key, value) in params {
+                                if let data = "\(value)".data(using: .utf8) {
+                                    multipartFormData.append(data, withName: key)
+                                }
+                            }
+                        }
+                        
+                        // Append media objects
+                        if let mediaObjects = mediaObjects {
+                            for (key, mediaArray) in mediaObjects {
+                                for media in mediaArray {
+                                    multipartFormData.append(media.data, withName: key, fileName: media.filename, mimeType: media.mimeType)
+                                }
+                            }
+                        }
+                        
+                    }, with: urlRequest)
+                    .uploadProgress { progress in
+                        progressHandler?(progress.fractionCompleted)
+                    }
+                    .responseData(queue: .global(qos: .background)) { response in
+                        
+                        switch response.result {
+                            
+                        case .success(let responseData):
+                            do {
+                                print(responseData.prettyPrintedJSONString ?? "")
+                                guard let httpResponse = response.response else {
+                                    continuation.resume(returning: .failure(NetworkError.unknown))
+                                    return
+                                }
+                                if httpResponse.statusCode == 200 {
+                                    let response = try JSONSerialization.jsonObject(with: responseData)
+                                    continuation.resume(returning: .success(response))
+                                } else if httpResponse.statusCode == 401 {
+                                    continuation.resume(returning: .failure(NetworkError.authentication))
+                                } else {
+                                    continuation.resume(returning: .failure(NetworkError.responseError(httpResponse.statusCode)))
+                                }
+                            } catch {
+                                continuation.resume(returning: .failure(NetworkError.unknown))
+                            }
+                            
+                        case .failure(let error):
+                            handleAFError(error, response: response, continuation: continuation)
+                        }
+                    }
+                }
+            } catch {
+                return .failure(NetworkError.unknown)
+            }
+        case .failure(let error):
+            return .failure(error)
+            
+        }
+        
+    }
+
+}
+
 
 //MARK: - Error handling
 extension JNetworkManager {

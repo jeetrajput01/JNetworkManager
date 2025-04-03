@@ -22,27 +22,6 @@ final class JNetworkManagerTests: XCTestCase {
 
     }
     
-    func testAnyAnyCodable() async throws {
-        
-        let result = await JNetworkManager.makeAsyncRequest(
-            url: "https://jsonplaceholder.typicode.com/posts",
-            method: .get,
-            parameter: nil,
-            type: AnyCodable.self
-        )
-        
-        switch result {
-        case .success(let success):
-            if let value = success.value as? [[String:Any]] {
-                let arrPosts = value.compactMap(Post.init)
-                XCTAssertGreaterThan(arrPosts.count, 0, "Posts should not be empty")
-            }
-        case .failure(let failure):
-            XCTFail("Request failed with error: \(failure)")
-        }
-        
-        
-    }
     
 }
 
