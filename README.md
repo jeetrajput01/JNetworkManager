@@ -18,7 +18,7 @@ To integrate **JNetworkManager** into your project, you can use **Swift Package 
 ## cocoapods
 To integrate **JNetworkManager** into your project, you can use **cocoapods**. Add the following line to your  `Podfile` file:
 ```ruby
-pod 'JNetworkManager', '1.3.1'
+pod 'JNetworkManager', '1.3.4'
 ```
 
 ## Usage
