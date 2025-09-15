@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,7 +16,8 @@
 		B175D14B2CA438FD004D968D /* TodoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B175D1472CA438FD004D968D /* TodoModel.swift */; };
 		B175D14C2CA438FD004D968D /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B175D1482CA438FD004D968D /* UserModel.swift */; };
 		B175D14F2CA43903004D968D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B175D14D2CA43903004D968D /* ContentView.swift */; };
-		B1AEAF002CD8FE7A00300EAC /* JNetworkManager in Frameworks */ = {isa = PBXBuildFile; productRef = B1AEAEFF2CD8FE7A00300EAC /* JNetworkManager */; };
+		B1D575B02E78338700D9004B /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = B1D575AF2E78338700D9004B /* Alamofire */; };
+		B1D575B52E7838BB00D9004B /* JNetworkManager in Frameworks */ = {isa = PBXBuildFile; productRef = B1D575B42E7838BB00D9004B /* JNetworkManager */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,7 +38,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B1AEAF002CD8FE7A00300EAC /* JNetworkManager in Frameworks */,
+				B1D575B02E78338700D9004B /* Alamofire in Frameworks */,
+				B1D575B52E7838BB00D9004B /* JNetworkManager in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,7 +128,8 @@
 			);
 			name = sample;
 			packageProductDependencies = (
-				B1AEAEFF2CD8FE7A00300EAC /* JNetworkManager */,
+				B1D575AF2E78338700D9004B /* Alamofire */,
+				B1D575B42E7838BB00D9004B /* JNetworkManager */,
 			);
 			productName = sample;
 			productReference = B175D1302CA438C8004D968D /* sample.app */;
@@ -157,7 +160,8 @@
 			);
 			mainGroup = B175D1272CA438C8004D968D;
 			packageReferences = (
-				B1AEAEFE2CD8FE7A00300EAC /* XCRemoteSwiftPackageReference "JNetworkManager" */,
+				B1D575AE2E78338700D9004B /* XCRemoteSwiftPackageReference "Alamofire" */,
+				B1D575B32E7838BB00D9004B /* XCLocalSwiftPackageReference "../../JNetworkManager" */,
 			);
 			productRefGroup = B175D1312CA438C8004D968D /* Products */;
 			projectDirPath = "";
@@ -419,21 +423,32 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		B1D575B32E7838BB00D9004B /* XCLocalSwiftPackageReference "../../JNetworkManager" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../../JNetworkManager;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
-		B1AEAEFE2CD8FE7A00300EAC /* XCRemoteSwiftPackageReference "JNetworkManager" */ = {
+		B1D575AE2E78338700D9004B /* XCRemoteSwiftPackageReference "Alamofire" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/jeetrajput01/JNetworkManager.git";
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.2.0;
+				minimumVersion = 5.10.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		B1AEAEFF2CD8FE7A00300EAC /* JNetworkManager */ = {
+		B1D575AF2E78338700D9004B /* Alamofire */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = B1AEAEFE2CD8FE7A00300EAC /* XCRemoteSwiftPackageReference "JNetworkManager" */;
+			package = B1D575AE2E78338700D9004B /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		B1D575B42E7838BB00D9004B /* JNetworkManager */ = {
+			isa = XCSwiftPackageProductDependency;
 			productName = JNetworkManager;
 		};
 /* End XCSwiftPackageProductDependency section */

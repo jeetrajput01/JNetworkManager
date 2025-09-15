@@ -13,7 +13,7 @@ Network manager wrapper for alamofire
 ## Swift Package Manager
 To integrate **JNetworkManager** into your project, you can use **Swift Package Manager**. Add the following line to your  `Package.swift` file:
 ```swift
-.package(url: "https://github.com/jeetrajput01/JNetworkManager.git", from: "1.3.3")
+.package(url: "https://github.com/jeetrajput01/JNetworkManager.git", from: "1.3.4")
 ```
 ## cocoapods
 To integrate **JNetworkManager** into your project, you can use **cocoapods**. Add the following line to your  `Podfile` file:
@@ -59,9 +59,6 @@ The package provides a comprehensive error handling mechanism. It differentiates
 
 ## Alamofire
 **Link:** [Alamofire](https://github.com/Alamofire/Alamofire)
-
-## AnyCodable
-**Link:** [AnyCodable](https://github.com/Flight-School/AnyCodable)
 
 ## Contributing
 Contributions are welcome! Please feel free to submit issues and pull requests.

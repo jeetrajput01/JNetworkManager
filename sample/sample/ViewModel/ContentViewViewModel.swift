@@ -47,10 +47,9 @@ extension ContentViewViewModel {
             let todoUrl = apiUrl.todos.route
             let postUrl = apiUrl.posts.route
             
-            let (userData, todoData, postData) = await (
+            let (userData, todoData) = await (
                 JNetworkManager.makeAsyncRequest(url: userUrl, method: .get, parameter: nil, type: [userModel].self),
                 JNetworkManager.makeAsyncRequest(url: todoUrl, method: .get, parameter: nil, type: [toDoModel].self)
-                JNetworkManager.makeAsyncRequest(url: postUrl, method: .get, parameter: nil, type: AnyCodable.self)
             )
             
             switch userData {
@@ -66,17 +65,6 @@ extension ContentViewViewModel {
             case .failure(let failure):
                 self.handle(error: failure)
             }
-            
-            switch postData {
-                case .success(let postData):
-                if let value = postData.value as? [[String:Any]] {
-                    let arrPosts = value.compactMap(PostModel.init)
-                    dump(arrPosts)
-                }
-            case .failure(let failure):
-                self.handle(error: failure)
-            }
-            
         }
         
     }
@@ -126,6 +114,10 @@ extension ContentViewViewModel {
             case .timeout:
                 print(networkError.localizedDescription)
             case .noInternet:
+                print(networkError.localizedDescription)
+            case .cancelRequest:
+                print(networkError.localizedDescription)
+            case .customError(_):
                 print(networkError.localizedDescription)
             }
         }
