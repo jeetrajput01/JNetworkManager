@@ -117,7 +117,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B175D13E2CA438C9004D968D /* Build configuration list for PBXNativeTarget "sample" */;
 			buildPhases = (
-				DF8D77D7DDDAC7D09F34C644 /* Copy Target Resources */,
 				B175D12C2CA438C8004D968D /* Sources */,
 				B175D12D2CA438C8004D968D /* Frameworks */,
 				B175D12E2CA438C8004D968D /* Resources */,
@@ -183,29 +182,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		DF8D77D7DDDAC7D09F34C644 /* Copy Target Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Target Resources";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# This output is used by Xcode outputs to avoid re-running this script phase.\nsh -c \"${TARGET_DEVICE_FAMILY}\"";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		B175D12C2CA438C8004D968D /* Sources */ = {
